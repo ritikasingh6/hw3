@@ -2,6 +2,7 @@
 #define HEAP_H
 #include <functional>
 #include <stdexcept>
+#include <vector>
 
 template <typename T, typename PComparator = std::less<T> >
 class Heap
@@ -61,6 +62,10 @@ public:
 
 private:
   /// Add whatever helper functions and data members you need below
+	std::vector<T> vec;
+	int mary;
+	PComparator compare;
+	void trickleDown(int loc);
 
 
 
@@ -68,6 +73,67 @@ private:
 };
 
 // Add implementation of member functions here
+template <typename T, typename PComparator>
+Heap<T, PComparator>::Heap(int m, PComparator c): mary(m), compare(c){
+
+}
+
+template <typename T, typename PComparator>
+Heap<T, PComparator>::~Heap(){
+
+}
+
+template <typename T, typename PComparator>
+void Heap<T, PComparator>::trickleDown(int loc){
+	int vecs = (int)vec.size();
+	int child = mary*loc + 1;
+
+	if (child > (vecs - 1)){
+		return;
+	}
+	else{
+		for (int i = 2; i <= mary; i++){
+			if (mary *loc + i < vecs){
+				int currChild = mary * loc + i;
+				if (compare(vec[currChild],vec[child]) == true){
+					child = currChild;
+				}
+			}
+		}
+		if (compare(vec[child],vec[loc]) == true){
+			T temp = vec[child];
+			vec[child] = vec[loc];
+			vec[loc] = temp;
+			trickleDown(child);
+		}
+	}
+}
+
+
+template <typename T, typename PComparator>
+void Heap<T, PComparator>::push(const T& item){
+	
+	vec.push_back(item);
+	int vecInt = int(vec.size());
+  int curr = vecInt - 1;
+  int parent = (curr - 1)/mary;
+  while((compare(vec[curr], vec[parent]) == true)&& curr != 0){
+		std::swap(vec[parent], vec[curr]);
+		curr = parent;
+		parent = (curr - 1)/mary;
+  }
+	
+}
+
+template <typename T, typename PComparator>
+bool Heap<T, PComparator>::empty() const{
+	return vec.std::vector<T>::empty();
+}
+
+template <typename T, typename PComparator>
+size_t Heap<T, PComparator>::size() const{
+	return vec.std::vector<T>::size();
+}
 
 
 // We will start top() for you to handle the case of 
@@ -81,12 +147,13 @@ T const & Heap<T,PComparator>::top() const
     // ================================
     // throw the appropriate exception
     // ================================
+		throw (std::underflow_error("Empty Heap"));
 
 
   }
   // If we get here we know the heap has at least 1 item
   // Add code to return the top element
-
+	return vec[0];
 
 
 }
@@ -101,9 +168,13 @@ void Heap<T,PComparator>::pop()
     // ================================
     // throw the appropriate exception
     // ================================
+		throw (std::underflow_error("Empty Heap"));
 
 
   }
+	vec[0] = vec.back();
+	vec.pop_back();
+	trickleDown(0);
 
 
 
